@@ -2,7 +2,6 @@ import { db } from "../db/connection.js";
 import { haversineDistance } from "../utils/haversineDistance.js";
 export const listSchools_query_params = async (req, res) => {
   const { latitude, longitude } = req.query;
-
   //! Validate input parameters
   if (!latitude || !longitude) {
     return res
@@ -14,14 +13,12 @@ export const listSchools_query_params = async (req, res) => {
   if (isNaN(userLat) || isNaN(userLon)) {
     return res.status(400).json({ error: "Invalid Latitude or Longitude." });
   }
-
   try {
     //! Fetch all schools from the database
     const result = await db.query(
       "SELECT id, name, address, latitude, longitude FROM schools"
     );
-
-    if (!result.rows.length) {
+    if (result.rows.length == 0) {
       return res.status(404).json({ message: "No schools found." });
     }
 

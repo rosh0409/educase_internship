@@ -10,23 +10,19 @@ export const listSchools_route_params = async (req, res) => {
       .status(400)
       .json({ error: "Latitude and Longitude are required." });
   }
-
   const userLat = parseFloat(latitude);
   const userLon = parseFloat(longitude);
   if (isNaN(userLat) || isNaN(userLon)) {
     return res.status(400).json({ error: "Invalid Latitude or Longitude." });
   }
-
   try {
     //! Fetch all schools from the database
     const result = await db.query(
       "SELECT id, name, address, latitude, longitude FROM schools"
     );
-
-    if (!result.rows.length) {
+    if (result.rows.length == 0) {
       return res.status(404).json({ message: "No schools found." });
     }
-
     //! Calculate distances and sort
     const schoolsWithDistance = result.rows.map((school) => ({
       ...school,
@@ -40,7 +36,7 @@ export const listSchools_route_params = async (req, res) => {
 
     schoolsWithDistance.sort((a, b) => a.distance - b.distance);
 
-    // Respond with the sorted list
+    //! Respond with the sorted list
     res.status(200).json(schoolsWithDistance);
   } catch (err) {
     console.error("Database error:", err);
