@@ -4,21 +4,21 @@ import { haversineDistance } from "../utils/haversineDistance.js";
 export const listSchools_route_params = async (req, res) => {
   const longitude = req.params?.longitude;
   const latitude = req.params?.latitude;
+  //! Validate input parameters
   if (!latitude || !longitude) {
     return res
       .status(400)
       .json({ error: "Latitude and Longitude are required." });
   }
+
   const userLat = parseFloat(latitude);
   const userLon = parseFloat(longitude);
-  console.log("userlat :: " + userLat);
-  console.log("userlon :: " + userLon);
   if (isNaN(userLat) || isNaN(userLon)) {
     return res.status(400).json({ error: "Invalid Latitude or Longitude." });
   }
 
   try {
-    // Fetch all schools from the database
+    //! Fetch all schools from the database
     const result = await db.query(
       "SELECT id, name, address, latitude, longitude FROM schools"
     );
@@ -27,7 +27,7 @@ export const listSchools_route_params = async (req, res) => {
       return res.status(404).json({ message: "No schools found." });
     }
 
-    // Calculate distances and sort
+    //! Calculate distances and sort
     const schoolsWithDistance = result.rows.map((school) => ({
       ...school,
       distance: haversineDistance(
